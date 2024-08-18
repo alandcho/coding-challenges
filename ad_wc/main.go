@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 )
 
 	
@@ -15,32 +18,49 @@ func check(e error) {
 }
 
 func main() {
-    fmt.Println("Hello, Go!")
-
     var args []string = os.Args
 
-    if (len(args) < 2) {
-        fmt.Println("please provide the filename");
-        return;
+    var inputContent string = "";
+    var filename string = "";
+    if (len(args) != 3) {
+        content, err := io.ReadAll(os.Stdin)
+
+        inputContent = string(content)
+
+        if err != nil {
+            fmt.Fprintln(os.Stderr, "reading standard input:", err)
+        }
+    } else {
+        filename = args[len(args) - 1];
+        inputContent =  readFile(filename);
     }
 
-    var filename string= args[len(args) - 1];
-    var isCountCharacter *bool = flag.Bool("c", false, "count number of character");
-    var isCountLine *bool = flag.Bool("l", false, "count number of character");
+ 
+    var isCountCharacters *bool = flag.Bool("c", false, "count number of characters");
+    var isCountLines *bool = flag.Bool("l", false, "count number of lines");
+    var isCountWords *bool = flag.Bool("w", false, "count number of words");
+    var isCountLocale *bool = flag.Bool("m", false, "count number of words");
     flag.Parse();
 
-    fmt.Println("Filename: ", filename, "count :", *isCountCharacter);
-    var content string = readFile(filename);
+   
     var result string; 
-    if (*isCountCharacter) {
-        result += " " +strconv.Itoa(countCharacter(content));
+    if (*isCountCharacters) {
+        result += " " +strconv.Itoa(countCharacter(inputContent));
     }
 
-    if (*isCountLine) {
-        result += " " + strconv.Itoa(countLines(content));
+    if (*isCountLines) {
+        result += " " + strconv.Itoa(countLines(inputContent));
     }
 
-    fmt.Println(result + " " + filename);
+    if (*isCountWords) {
+        result += " " + strconv.Itoa(countWords(inputContent));
+    }
+
+    if (*isCountLocale) {
+        result += " " + strconv.Itoa(countLocale(inputContent));
+    }
+
+    fmt.Println(result + " " + filename)
 }
 
 func readFile(filename string) string{
@@ -63,4 +83,12 @@ func countLines(stringToCount string) int {
     } 
 
     return count;
+}
+
+func countWords(stringToCount string) int {
+    return len(strings.Fields(stringToCount));
+}
+
+func countLocale(stringToCount string) int {
+    return utf8.RuneCountInString(stringToCount);
 }
