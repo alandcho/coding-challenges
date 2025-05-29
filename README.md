@@ -1,3 +1,5 @@
+Based on this challenge: https://codingchallenges.fyi/challenges/challenge-wc/
+
 # How to run test
 go test -v
 
