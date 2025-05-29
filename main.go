@@ -10,21 +10,21 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-	
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
 
 func main() {
 
-    var isByteCounts *bool = flag.BoolP("bytes", "c", false, "print the byte counts");
-    var isCountLines *bool = flag.BoolP("lines", "l", false, "print the newline counts");
-    var isCountWords *bool = flag.BoolP("words", "w", false, "print the word counts");
-    var isCountLocale *bool = flag.BoolP("chars", "m", false, "print the character counts");
-    flag.Parse();
+    var isByteCounts *bool = flag.BoolP("bytes", "c", false, "print the byte counts")
+    var isCountLines *bool = flag.BoolP("lines", "l", false, "print the newline counts")
+    var isCountWords *bool = flag.BoolP("words", "w", false, "print the word counts")
+    var isCountLocale *bool = flag.BoolP("chars", "m", false, "print the character counts")
+    help := flag.BoolP("help", "h", false, "help message")
+    
+    flag.Parse()
 
+    if *help {
+        flag.Usage()
+        os.Exit(0)
+    }
 
     if flag.NArg() != 1 {
         fmt.Println("Error: exactyle one parameter required")
