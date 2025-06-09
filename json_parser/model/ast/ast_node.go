@@ -1,5 +1,6 @@
 package ast
 
+import "fmt"
 
 type ASTNodeType int
 
@@ -15,4 +16,8 @@ const (
 type ASTNode struct {
 	NodeType ASTNodeType
 	Value interface{}
+}
+
+func (a ASTNode) String() string {
+	return fmt.Sprintf("ASTNode{Type: %v, Value: %v}", a.NodeType, a.Value)
 }

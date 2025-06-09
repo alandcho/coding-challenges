@@ -1,5 +1,6 @@
 package model
 
+import "fmt"
 
 type TokenType int
 
@@ -28,7 +29,15 @@ type TokenList struct {
 	Index  int32
 }
 
-func (tk *TokenList) NextToken() Token{
-	tk.Index = tk.Index + 1
-	return tk.Tokens[tk.Index]
+func (tl *TokenList) NextToken() Token{
+	tl.Index = tl.Index + 1
+	if int(tl.Index) >= len(tl.Tokens) {
+		// Return a safe token instead of panicking
+		return Token{TokenType: -1, Value: ""}
+	}
+	return tl.Tokens[tl.Index]
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("Token{Type: %v, Value: %q}", t.TokenType, t.Value)
 }

@@ -20,15 +20,15 @@ func New() ParserInterface {
 }
 
 
-func (s *Parser) Parse(tokens *model.TokenList) (ast.ASTNode, error) {
+func (p *Parser) Parse(tokens *model.TokenList) (ast.ASTNode, error) {
 	if (len(tokens.Tokens) == 0) {
 		return ast.ASTNode{}, fmt.Errorf("empty token array")
 	}
 	
-	return s.ParseValue(tokens)
+	return p.ParseValue(tokens)
 }
 
-func (s *Parser) ParseValue(tokens *model.TokenList) (ast.ASTNode, error) {
+func (p *Parser) ParseValue(tokens *model.TokenList) (ast.ASTNode, error) {
 	token := tokens.Tokens[tokens.Index]
 	switch token.TokenType {
 		case model.TokenString:
@@ -46,16 +46,16 @@ func (s *Parser) ParseValue(tokens *model.TokenList) (ast.ASTNode, error) {
 		case model.Null:
 			return ast.ASTNode{NodeType: ast.Null, Value: nil}, nil
 		case model.BraceOpen:
-			return s.parseObject(tokens)
+			return p.parseObject(tokens)
 		case model.BracketOpen:
-			return s.parseArray(tokens)
+			return p.parseArray(tokens)
 		default:
 			return ast.ASTNode{}, fmt.Errorf("unexpected token type: %v", token.TokenType)
 	} 
 }
 
 
-func (s *Parser) parseObject(tokens *model.TokenList) (ast.ASTNode, error) {
+func (p *Parser) parseObject(tokens *model.TokenList) (ast.ASTNode, error) {
 	node := ast.ASTNode{NodeType: ast.Object, Value: make(map[string]interface{})}
 	token := tokens.NextToken()
 
@@ -67,7 +67,7 @@ func (s *Parser) parseObject(tokens *model.TokenList) (ast.ASTNode, error) {
 				return ast.ASTNode{}, fmt.Errorf("expected : in key value pair")
 			}
 			token = tokens.NextToken()
-			value, err := s.ParseValue(tokens)
+			value, err := p.ParseValue(tokens)
 
 			if err != nil {
 				return ast.ASTNode{}, err
@@ -87,12 +87,12 @@ func (s *Parser) parseObject(tokens *model.TokenList) (ast.ASTNode, error) {
 }
 
 
-func (s *Parser) parseArray(tokens *model.TokenList) (ast.ASTNode, error) {
+func (p *Parser) parseArray(tokens *model.TokenList) (ast.ASTNode, error) {
 	node := ast.ASTNode{NodeType: ast.Array, Value: make([]interface{}, 0, 10)}
 	token := tokens.NextToken() // Eat [
 
 	for token.TokenType != model.BracketClose {
-		value, err := s.ParseValue(tokens)
+		value, err := p.ParseValue(tokens)
 
 		if err != nil {
 			return ast.ASTNode{}, err
@@ -109,6 +109,6 @@ func (s *Parser) parseArray(tokens *model.TokenList) (ast.ASTNode, error) {
 
 	
 
-	return ast.ASTNode{}, nil
+	return node, nil
 }
 

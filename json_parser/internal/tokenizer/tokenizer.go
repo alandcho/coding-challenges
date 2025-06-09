@@ -36,7 +36,11 @@ var (
 	} 
 )
 
-func (s *Tokenizer) Tokenize(input string) ([]model.Token, error) {
+func (t *Tokenizer) Tokenize(input string) ([]model.Token, error) {
+	if input == "" {
+		return nil, fmt.Errorf("input string cannot be empty")
+	}
+	
 	index := 0
 	result := []model.Token{}
 
@@ -54,6 +58,9 @@ func (s *Tokenizer) Tokenize(input string) ([]model.Token, error) {
 			for char != '"' {
 				sb.WriteByte(char)
 				index++
+				if index >= len(input) {
+					return nil, fmt.Errorf("unterminated string literal")
+				}
 				char = input[index]
 			}
 			result = append(result, model.Token{TokenType: model.TokenString, Value: sb.String()})
@@ -63,6 +70,9 @@ func (s *Tokenizer) Tokenize(input string) ([]model.Token, error) {
 			for unicode.IsDigit(rune(char)) || unicode.IsLetter(rune(char)) {
 				sb.WriteByte(char)
 				index++
+				if index >= len(input) {
+					break
+				}
 				char = input[index]
 			}
 			processedString := sb.String()

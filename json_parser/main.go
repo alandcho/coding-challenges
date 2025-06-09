@@ -24,15 +24,15 @@ func main() {
 	
 	token, err := tokenizerService.Tokenize(jsonString)
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Printf("Tokenization error: %v\n", err)
+		return
 	}
 
 	tokenList := model.TokenList{Tokens: token, Index: 0}
 	rootNode, err := parserService.Parse(&tokenList)
-
-	
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Printf("Parsing error: %v\n", err)
+		return
 	}
 
 	fmt.Println(rootNode)
